@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arroz con Leche | VIBRAS POSITIVAS HM</title>
+    <title>VIBRAS POSITIVAS HM | Arroz con Leche</title>
     <style>
         :root {
             --marron: #4e2c1e;
@@ -18,7 +18,23 @@
             margin: 0; 
             padding: 0; 
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* RELOJ SUPERIOR */
+        #reloj-superior {
+            background: var(--marron);
+            color: white;
+            width: 100%;
+            text-align: center;
+            padding: 5px 0;
+            font-weight: bold;
+            font-size: 14px;
+            letter-spacing: 1px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
         
         .app-card { 
@@ -30,82 +46,60 @@
             position: relative;
         }
 
-        .header-img { 
-            width: 100%; 
-            display: block;
-            margin: 0;
-        }
+        .header-img { width: 100%; display: block; }
 
         .content { padding: 25px; text-align: center; }
 
-        .price-tag { 
-            font-size: 40px; 
-            color: var(--rojo); 
-            font-weight: 900; 
-            margin: 15px 0;
-        }
+        .price-tag { font-size: 40px; color: var(--rojo); font-weight: 900; margin: 15px 0; }
 
         input { 
-            width: 100%; 
-            padding: 15px; 
-            margin: 10px 0; 
-            border: 2px solid #eee; 
-            border-radius: 12px; 
-            font-size: 16px; 
-            box-sizing: border-box;
+            width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #eee; 
+            border-radius: 12px; font-size: 16px; box-sizing: border-box;
         }
         
         .btn { 
-            width: 100%; 
-            padding: 18px; 
-            border: none; 
-            border-radius: 12px; 
-            font-size: 18px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            margin-top: 15px; 
-            color: white; 
-            text-transform: uppercase;
+            width: 100%; padding: 18px; border: none; border-radius: 12px; 
+            font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 15px; 
+            color: white; text-transform: uppercase;
         }
 
         .btn-paga { background-color: var(--marron); }
         .btn-debe { background-color: var(--rojo); }
         
-        /* PANEL ADMIN */
-        #admin-panel { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: white; 
-            z-index: 100; 
-            padding: 20px; 
-            box-sizing: border-box; 
-            overflow-y: auto; 
+        /* BLOQUEO POR SUSCRIPCIÓN */
+        #bloqueo {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: white;
+            z-index: 9999;
+            text-align: center;
+            padding-top: 100px;
         }
 
-        .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn-sm { padding: 10px; font-size: 12px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer; }
+        /* ADMIN PANEL */
+        #admin-panel { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: white; z-index: 100; padding: 20px; box-sizing: border-box; overflow-y: auto; 
+        }
+
+        .btn-cobrar { background-color: var(--verde); color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; font-size: 12px; }
 
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background: var(--marron); color: white; }
-
-        .btn-cobrar {
-            background-color: var(--verde);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .footer-info { font-size: 11px; color: #777; margin-top: 30px; padding-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; }
     </style>
 </head>
 <body>
 
-<div class="app-card" id="client-view">
+<div id="reloj-superior">Cargando hora...</div>
+
+<div id="bloqueo">
+    <h1 style="color:red">SUSCRIPCIÓN VENCIDA</h1>
+    <p>Tu acceso a la App de Arroz con Leche ha caducado el 15 de Mayo.</p>
+    <p>Contacta a Soporte para renovar.</p>
+</div>
+
+<div class="app-card" id="main-app">
     <img src="leche.jpg" class="header-img">
     
     <div class="content">
@@ -120,31 +114,21 @@
 
         <p style="cursor:pointer; font-size:12px; color:#ccc; margin-top:40px;" onclick="mostrarAdmin()">Acceso Admin</p>
         
-        <div class="footer-info">
-            VIBRAS POSITIVAS HM<br>
-            © 2026 TODOS LOS DERECHOS RESERVADOS
+        <div style="font-size: 10px; color:#888; margin-top:20px;">
+            VIBRAS POSITIVAS HM © 2026
         </div>
     </div>
 </div>
 
 <div id="admin-panel">
-    <h3>CONTROL DE COBROS</h3>
-    <div class="admin-nav">
-        <button class="btn-sm" onclick="cerrarAdmin()">✖ Cerrar</button>
-        <button class="btn-sm" style="background:#28a745; color:white;" onclick="descargarBackup()">📥 Backup</button>
-        <button class="btn-sm" style="background:#ffc107;" onclick="document.getElementById('input-file').click()">📤 Restaurar</button>
-    </div>
-    
-    <input type="file" id="input-file" style="display:none" onchange="restaurarBackup(event)">
-    <p>Total en ventas: <strong id="resumen-ventas">$0</strong></p>
-    
+    <h3>ADMINISTRACIÓN - VIBRAS POSITIVAS HM</h3>
+    <button onclick="cerrarAdmin()">✖ Cerrar</button>
+    <button onclick="descargarBackup()">📥 Backup</button>
+    <hr>
+    <p>Ventas: <strong id="total-ventas">$0</strong></p>
     <table id="tabla-ventas">
         <thead>
-            <tr>
-                <th>Cliente</th>
-                <th>Estado</th>
-                <th>Acción</th>
-            </tr>
+            <tr><th>Cliente</th><th>Estado</th><th>Acción</th></tr>
         </thead>
         <tbody id="cuerpo-tabla"></tbody>
     </table>
@@ -153,14 +137,30 @@
 <script>
     const MI_WHATSAPP = "573106418219";
     const PRECIO = 10000;
+    const FECHA_VENCIMIENTO = new Date("2026-05-15T23:59:59");
     let registros = JSON.parse(localStorage.getItem('db_vibras_hm')) || [];
 
+    // 1. RELOJ Y CONTROL DE FECHA
+    function actualizarReloj() {
+        const ahora = new Date();
+        const strHora = ahora.toLocaleTimeString();
+        document.getElementById('reloj-superior').innerText = strHora;
+
+        // Validar Suscripción
+        if (ahora > FECHA_VENCIMIENTO) {
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('bloqueo').style.display = 'block';
+        }
+    }
+    setInterval(actualizarReloj, 1000);
+
+    // 2. PROCESAR PEDIDO
     function procesarPedido(tipo) {
         const nom = document.getElementById('nombre').value;
         const cel = document.getElementById('celular').value;
         const dir = document.getElementById('direccion').value;
 
-        if (!nom || !cel || !dir) return alert("Completa los datos.");
+        if (!nom || !cel || !dir) return alert("Llena los datos.");
 
         const pedido = { nom, cel, dir, tipo, monto: PRECIO, fecha: new Date().toLocaleString() };
         registros.push(pedido);
@@ -175,55 +175,41 @@
         window.open(`https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(msj)}`, '_blank');
     }
 
+    // 3. ADMIN
     function mostrarAdmin() {
         if (prompt("Clave:") === "1027") {
             document.getElementById('admin-panel').style.display = 'block';
-            renderizarTabla();
+            renderTabla();
         }
     }
 
     function cerrarAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
 
-    function renderizarTabla() {
+    function renderTabla() {
         const tbody = document.getElementById('cuerpo-tabla');
         tbody.innerHTML = "";
         let total = 0;
-        registros.forEach((r, index) => {
+        registros.forEach(r => {
             total += r.monto;
-            // Botón de cobro dinámico: Si debe, genera link al WhatsApp del cliente
-            let accion = "";
-            if (r.tipo === 'DEBE') {
-                const msjCobro = `Hola ${r.nom}, te saludamos de *VIBRAS POSITIVAS HM*. Te escribimos para coordinar el pago de tu Arroz con Leche ($${r.monto.toLocaleString()}). ¡Gracias!`;
-                accion = `<a class="btn-cobrar" href="https://wa.me/57${r.cel}?text=${encodeURIComponent(msjCobro)}" target="_blank">COBRAR</a>`;
-            } else {
-                accion = "✅ Pagado";
-            }
+            let btnCobro = r.tipo === 'DEBE' ? 
+                `<a class="btn-cobrar" href="https://wa.me/57${r.cel}?text=Hola%20${r.nom},%20te%20escribimos%20de%20VIBRAS%20POSITIVAS%20HM%20para%20el%20cobro%20del%20arroz.">COBRAR</a>` : 
+                "✅ OK";
 
             tbody.innerHTML += `<tr>
                 <td>${r.nom}</td>
                 <td>${r.tipo}</td>
-                <td>${accion}</td>
+                <td>${btnCobro}</td>
             </tr>`;
         });
-        document.getElementById('resumen-ventas').innerText = `$${total.toLocaleString()}`;
+        document.getElementById('total-ventas').innerText = `$${total.toLocaleString()}`;
     }
 
     function descargarBackup() {
         const blob = new Blob([JSON.stringify(registros)], { type: "text/plain" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "backup_ventas.txt";
+        a.download = "backup_vibras_positivas.txt";
         a.click();
-    }
-
-    function restaurarBackup(e) {
-        const lector = new FileReader();
-        lector.onload = (evt) => {
-            registros = JSON.parse(evt.target.result);
-            localStorage.setItem('db_vibras_hm', JSON.stringify(registros));
-            renderizarTabla();
-        };
-        lector.readAsText(e.target.files[0]);
     }
 </script>
 </body>
