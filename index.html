@@ -12,188 +12,164 @@
             --verde: #25D366;
         }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 10px;
-        }
-
-        /* VISTA CLIENTE */
-        .app-card {
-            background: white;
-            max-width: 450px;
-            margin: auto;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            border: 2px solid var(--marron);
-        }
-
-        .header-img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            display: block;
-        }
-
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--crema); margin: 0; padding: 10px; }
+        
+        .app-card { background: white; max-width: 450px; margin: auto; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); border: 2px solid var(--marron); }
+        .header-img { width: 100%; height: 280px; object-fit: cover; display: block; }
         .content { padding: 20px; text-align: center; }
-
         .price { font-size: 35px; color: var(--rojo); font-weight: bold; margin: 10px 0; }
 
-        input {
-            width: 90%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            color: white;
-        }
-
+        input { width: 90%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+        
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; color: white; transition: 0.3s; }
         .btn-paga { background-color: var(--marron); }
         .btn-debe { background-color: var(--rojo); }
-        .btn-admin { background: none; color: #888; font-size: 12px; text-decoration: underline; margin-top: 20px; }
+        
+        #admin-panel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 100; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .admin-btns { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn-small { padding: 8px; font-size: 12px; cursor: pointer; background: #eee; border: 1px solid #ccc; border-radius: 5px; }
 
-        /* PANEL ADMIN */
-        #admin-panel {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: white;
-            z-index: 100;
-            padding: 20px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background: var(--marron); color: white; }
+        .footer-brand { font-size: 10px; color: #aaa; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="app-card" id="client-view">
-    <img src="https://i.ibb.co/6aa26178c3d03b1b00065079d949f518006224cc741d52bc/arroz.jpg" class="header-img" alt="Arroz con Leche">
+    <img src="https://i.ibb.co/6aa26178c3d03b1b00065079d949f518006224cc741d52bc/arroz.jpg" class="header-img">
     
     <div class="content">
         <h1>Arroz con Leche</h1>
-        <p>Tradición de <b>VIBRAS POSITIVAS HM</b></p>
         <div class="price">$10.000</div>
 
         <input type="text" id="nombre" placeholder="Nombre completo">
+        <input type="number" id="celular" placeholder="Número de Celular">
         <input type="text" id="direccion" placeholder="Dirección de entrega">
         
         <button class="btn btn-paga" onclick="procesarPedido('PAGADO')">PAGAR AHORA</button>
-        <button class="btn btn-debe" onclick="procesarPedido('DEBE')">LO DEBO (Crédito)</button>
+        <button class="btn btn-debe" onclick="procesarPedido('DEBE')">LO DEBO</button>
 
-        <button class="btn-admin" onclick="mostrarAdmin()">Acceso Administrador</button>
+        <p style="cursor:pointer; font-size:12px; color:#888; margin-top:15px;" onclick="mostrarAdmin()">⚙️ Admin</p>
+        
+        <div class="footer-brand">© 2026 VIBRAS POSITIVAS HM</div>
     </div>
 </div>
 
 <div id="admin-panel">
-    <h2>Control de Ventas - VIBRAS POSITIVAS HM</h2>
-    <button onclick="cerrarAdmin()">Volver a la App</button>
-    <p>Total Ventas: <span id="resumen-ventas">$0</span></p>
+    <h3>Panel de Control - VIBRAS POSITIVAS HM</h3>
+    <div class="admin-btns">
+        <button class="btn-small" onclick="cerrarAdmin()">✖ Cerrar</button>
+        <button class="btn-small" style="background:#d4edda" onclick="descargarBackup()">📥 Guardar Backup</button>
+        <button class="btn-small" style="background:#fff3cd" onclick="document.getElementById('input-file').click()">📤 Restaurar</button>
+        <button class="btn-small" style="background:#f8d7da" onclick="limpiarRegistros()">🗑 Borrar Todo</button>
+    </div>
     
-    <table>
+    <input type="file" id="input-file" style="display:none" onchange="restaurarBackup(event)">
+    <p>Total Ventas: <strong id="resumen-ventas">$0</strong></p>
+    
+    <table id="tabla-admin">
         <thead>
             <tr>
                 <th>Cliente</th>
+                <th>Celular</th>
                 <th>Estado</th>
                 <th>Total</th>
             </tr>
         </thead>
-        <tbody id="tabla-ventas"></tbody>
+        <tbody id="cuerpo-tabla"></tbody>
     </table>
-    <button class="btn btn-debe" style="margin-top:20px" onclick="limpiarRegistros()">Limpiar Datos</button>
 </div>
 
 <script>
     const WHATSAPP_NUM = "573106418219";
     const PRECIO = 10000;
-
-    // Cargar datos al iniciar
-    let ventas = JSON.parse(localStorage.getItem('ventas_vibras')) || [];
+    let ventas = JSON.parse(localStorage.getItem('ventas_arroz_hm')) || [];
 
     function procesarPedido(estado) {
         const nombre = document.getElementById('nombre').value;
+        const celular = document.getElementById('celular').value;
         const direccion = document.getElementById('direccion').value;
 
-        if (!nombre || !direccion) {
-            alert("Completa tus datos para el envío");
+        if (!nombre || !celular || !direccion) {
+            alert("Por favor, llena todos los datos.");
             return;
         }
 
-        // 1. Guardar en registro de Admin
-        const nuevoPedido = { nombre, direccion, estado, total: PRECIO, fecha: new Date().toLocaleString() };
-        ventas.push(nuevoPedido);
-        localStorage.setItem('ventas_vibras', JSON.stringify(ventas));
+        const pedido = { nombre, celular, direccion, estado, total: PRECIO, fecha: new Date().toLocaleString() };
+        ventas.push(pedido);
+        localStorage.setItem('ventas_arroz_hm', JSON.stringify(ventas));
 
-        // 2. Crear mensaje de WhatsApp
-        let mensaje = "";
-        if (estado === 'DEBE') {
-            mensaje = `🚨 *NUEVO PEDIDO AL DEBE*\n\n`;
-        } else {
-            mensaje = `✅ *NUEVO PEDIDO PAGADO*\n\n`;
-        }
+        const msj = `*NUEVO PEDIDO VIBRAS POSITIVAS HM*\n\n` +
+                    `📌 *Estado:* ${estado === 'DEBE' ? '⚠️ DEBE' : '✅ PAGADO'}\n` +
+                    `👤 *Cliente:* ${nombre}\n` +
+                    `📱 *Celular:* ${celular}\n` +
+                    `📍 *Dirección:* ${direccion}\n` +
+                    `💰 *Total:* $${PRECIO.toLocaleString()}`;
 
-        mensaje += `👤 Cliente: ${nombre}\n📍 Dirección: ${direccion}\n💰 Valor: $${PRECIO.toLocaleString()}\n📌 Estado: ${estado}\n\n_VIBRAS POSITIVAS HM_`;
-
-        // 3. Redirigir a WhatsApp
-        const url = `https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(mensaje)}`;
-        window.open(url, '_blank');
-        
-        alert("¡Pedido enviado correctamente!");
+        window.open(`https://wa.me/${WHATSAPP_NUM}?text=${encodeURIComponent(msj)}`, '_blank');
     }
 
-    // Funciones Admin
     function mostrarAdmin() {
-        const pass = prompt("Clave de administrador:");
-        if (pass === "1234") { // Cambia tu clave aquí
+        const pass = prompt("Clave:");
+        if (pass === "1027") { // Clave sugerida
             document.getElementById('admin-panel').style.display = 'block';
             actualizarTabla();
-        } else {
-            alert("Clave incorrecta");
         }
     }
 
-    function cerrarAdmin() {
-        document.getElementById('admin-panel').style.display = 'none';
-    }
+    function cerrarAdmin() { document.getElementById('admin-panel').style.display = 'none'; }
 
     function actualizarTabla() {
-        const tabla = document.getElementById('tabla-ventas');
-        const resumen = document.getElementById('resumen-ventas');
-        tabla.innerHTML = "";
+        const cuerpo = document.getElementById('cuerpo-tabla');
+        cuerpo.innerHTML = "";
         let suma = 0;
-
         ventas.forEach(v => {
             suma += v.total;
-            tabla.innerHTML += `<tr><td>${v.nombre}</td><td>${v.estado}</td><td>$${v.total}</td></tr>`;
+            cuerpo.innerHTML += `<tr><td>${v.nombre}</td><td>${v.celular}</td><td>${v.estado}</td><td>$${v.total.toLocaleString()}</td></tr>`;
         });
-        resumen.innerText = `$${suma.toLocaleString()}`;
+        document.getElementById('resumen-ventas').innerText = `$${suma.toLocaleString()}`;
+    }
+
+    // --- SISTEMA DE BACKUP Y RESTAURACIÓN ---
+    function descargarBackup() {
+        const dataStr = JSON.stringify(ventas, null, 2);
+        const blob = new Blob([dataStr], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = `backup_ventas_vibras_positivas_${new Date().toLocaleDateString()}.txt`;
+        link.href = url;
+        link.click();
+    }
+
+    function restaurarBackup(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const contenido = JSON.parse(e.target.result);
+                if (Array.isArray(contenido)) {
+                    ventas = contenido;
+                    localStorage.setItem('ventas_arroz_hm', JSON.stringify(ventas));
+                    actualizarTabla();
+                    alert("¡Datos restaurados con éxito!");
+                }
+            } catch (err) {
+                alert("Error al leer el archivo de backup.");
+            }
+        };
+        reader.readAsText(file);
     }
 
     function limpiarRegistros() {
-        if(confirm("¿Seguro quieres borrar todas las ventas?")) {
+        if(confirm("¿Seguro quieres borrar TODO? Asegúrate de tener un backup.")) {
             ventas = [];
-            localStorage.setItem('ventas_vibras', JSON.stringify(ventas));
+            localStorage.removeItem('ventas_arroz_hm');
             actualizarTabla();
         }
     }
 </script>
-
 </body>
 </html>
