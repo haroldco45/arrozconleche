@@ -30,24 +30,19 @@
             position: relative;
         }
 
-        /* Imagen al 100% como logo/banner principal */
         .header-img { 
             width: 100%; 
             display: block;
             margin: 0;
         }
 
-        .content { 
-            padding: 25px; 
-            text-align: center; 
-        }
+        .content { padding: 25px; text-align: center; }
 
         .price-tag { 
             font-size: 40px; 
             color: var(--rojo); 
             font-weight: 900; 
             margin: 15px 0;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         input { 
@@ -58,10 +53,7 @@
             border-radius: 12px; 
             font-size: 16px; 
             box-sizing: border-box;
-            outline: none;
         }
-
-        input:focus { border-color: var(--marron); }
         
         .btn { 
             width: 100%; 
@@ -74,12 +66,10 @@
             margin-top: 15px; 
             color: white; 
             text-transform: uppercase;
-            transition: 0.3s; 
         }
 
         .btn-paga { background-color: var(--marron); }
         .btn-debe { background-color: var(--rojo); }
-        .btn-paga:active, .btn-debe:active { transform: scale(0.95); }
         
         /* PANEL ADMIN */
         #admin-panel { 
@@ -96,22 +86,27 @@
         .admin-nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
         .btn-sm { padding: 10px; font-size: 12px; border-radius: 5px; border: 1px solid #ccc; cursor: pointer; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
         th { background: var(--marron); color: white; }
 
-        .footer-info { 
-            font-size: 11px; 
-            color: #777; 
-            margin-top: 30px; 
-            padding-bottom: 20px;
+        .btn-cobrar {
+            background-color: var(--verde);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            display: inline-block;
         }
+
+        .footer-info { font-size: 11px; color: #777; margin-top: 30px; padding-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="app-card" id="client-view">
-    <img src="leche.jpg" class="header-img" alt="Arroz con Leche VIBRAS POSITIVAS HM">
+    <img src="leche.jpg" class="header-img">
     
     <div class="content">
         <div class="price-tag">$10.000</div>
@@ -120,37 +115,35 @@
         <input type="number" id="celular" placeholder="📱 Número de Celular">
         <input type="text" id="direccion" placeholder="📍 Dirección de entrega">
         
-        <button class="btn btn-paga" onclick="procesarPedido('PAGADO')">💰 YA PAGUÉ / PAGO AHORA</button>
-        <button class="btn btn-debe" onclick="procesarPedido('DEBE')">📝 LO DEBO (Anotar)</button>
+        <button class="btn btn-paga" onclick="procesarPedido('PAGADO')">💰 YA PAGUÉ</button>
+        <button class="btn btn-debe" onclick="procesarPedido('DEBE')">📝 LO DEBO</button>
 
         <p style="cursor:pointer; font-size:12px; color:#ccc; margin-top:40px;" onclick="mostrarAdmin()">Acceso Admin</p>
         
         <div class="footer-info">
-            DESARROLLADO POR VIBRAS POSITIVAS HM<br>
+            VIBRAS POSITIVAS HM<br>
             © 2026 TODOS LOS DERECHOS RESERVADOS
         </div>
     </div>
 </div>
 
 <div id="admin-panel">
-    <h3>ADMINISTRACIÓN DE VENTAS</h3>
+    <h3>CONTROL DE COBROS</h3>
     <div class="admin-nav">
         <button class="btn-sm" onclick="cerrarAdmin()">✖ Cerrar</button>
-        <button class="btn-sm" style="background:#28a745; color:white;" onclick="descargarBackup()">📥 Guardar Backup (.txt)</button>
-        <button class="btn-sm" style="background:#ffc107;" onclick="document.getElementById('input-file').click()">📤 Restaurar Backup</button>
-        <button class="btn-sm" style="background:#dc3545; color:white;" onclick="limpiarRegistros()">🗑 Borrar Todo</button>
+        <button class="btn-sm" style="background:#28a745; color:white;" onclick="descargarBackup()">📥 Backup</button>
+        <button class="btn-sm" style="background:#ffc107;" onclick="document.getElementById('input-file').click()">📤 Restaurar</button>
     </div>
     
     <input type="file" id="input-file" style="display:none" onchange="restaurarBackup(event)">
-    <p>Ingresos Totales: <strong id="resumen-ventas">$0</strong></p>
+    <p>Total en ventas: <strong id="resumen-ventas">$0</strong></p>
     
     <table id="tabla-ventas">
         <thead>
             <tr>
                 <th>Cliente</th>
-                <th>Celular</th>
                 <th>Estado</th>
-                <th>Monto</th>
+                <th>Acción</th>
             </tr>
         </thead>
         <tbody id="cuerpo-tabla"></tbody>
@@ -158,8 +151,8 @@
 </div>
 
 <script>
-    const NUM_WHATSAPP = "573106418219";
-    const VALOR_ARROZ = 10000;
+    const MI_WHATSAPP = "573106418219";
+    const PRECIO = 10000;
     let registros = JSON.parse(localStorage.getItem('db_vibras_hm')) || [];
 
     function procesarPedido(tipo) {
@@ -167,37 +160,25 @@
         const cel = document.getElementById('celular').value;
         const dir = document.getElementById('direccion').value;
 
-        if (!nom || !cel || !dir) {
-            alert("Por favor completa todos los datos para procesar tu pedido.");
-            return;
-        }
+        if (!nom || !cel || !dir) return alert("Completa los datos.");
 
-        // Guardar en base de datos local
-        const nuevoPedido = { nom, cel, dir, tipo, monto: VALOR_ARROZ, fecha: new Date().toLocaleString() };
-        registros.push(nuevoPedido);
+        const pedido = { nom, cel, dir, tipo, monto: PRECIO, fecha: new Date().toLocaleString() };
+        registros.push(pedido);
         localStorage.setItem('db_vibras_hm', JSON.stringify(registros));
 
-        // Formatear mensaje para WhatsApp
-        const statusEmoji = (tipo === 'DEBE') ? "🚨 *DEBE*" : "✅ *PAGADO*";
-        const textoWA = `*NUEVO PEDIDO - VIBRAS POSITIVAS HM*\n\n` +
-                        `📌 *ESTADO:* ${statusEmoji}\n` +
-                        `👤 *CLIENTE:* ${nom}\n` +
-                        `📱 *CELULAR:* ${cel}\n` +
-                        `📍 *DIRECCIÓN:* ${dir}\n` +
-                        `💵 *VALOR:* $${VALOR_ARROZ.toLocaleString()}\n\n` +
-                        `_Enviado desde la App Oficial_`;
+        const msj = `*NUEVO PEDIDO VIBRAS POSITIVAS HM*\n\n` +
+                    `📌 *ESTADO:* ${(tipo === 'DEBE') ? "🚨 DEBE" : "✅ PAGADO"}\n` +
+                    `👤 *CLIENTE:* ${nom}\n` +
+                    `📱 *CELULAR:* ${cel}\n` +
+                    `📍 *DIRECCIÓN:* ${dir}`;
 
-        window.open(`https://wa.me/${NUM_WHATSAPP}?text=${encodeURIComponent(textoWA)}`, '_blank');
+        window.open(`https://wa.me/${MI_WHATSAPP}?text=${encodeURIComponent(msj)}`, '_blank');
     }
 
-    // Funciones de Administrador
     function mostrarAdmin() {
-        const pass = prompt("Introduce la clave de Administrador:");
-        if (pass === "1027") {
+        if (prompt("Clave:") === "1027") {
             document.getElementById('admin-panel').style.display = 'block';
             renderizarTabla();
-        } else {
-            alert("Acceso denegado.");
         }
     }
 
@@ -206,56 +187,44 @@
     function renderizarTabla() {
         const tbody = document.getElementById('cuerpo-tabla');
         tbody.innerHTML = "";
-        let totalDinero = 0;
-        registros.forEach(r => {
-            totalDinero += r.monto;
+        let total = 0;
+        registros.forEach((r, index) => {
+            total += r.monto;
+            // Botón de cobro dinámico: Si debe, genera link al WhatsApp del cliente
+            let accion = "";
+            if (r.tipo === 'DEBE') {
+                const msjCobro = `Hola ${r.nom}, te saludamos de *VIBRAS POSITIVAS HM*. Te escribimos para coordinar el pago de tu Arroz con Leche ($${r.monto.toLocaleString()}). ¡Gracias!`;
+                accion = `<a class="btn-cobrar" href="https://wa.me/57${r.cel}?text=${encodeURIComponent(msjCobro)}" target="_blank">COBRAR</a>`;
+            } else {
+                accion = "✅ Pagado";
+            }
+
             tbody.innerHTML += `<tr>
                 <td>${r.nom}</td>
-                <td>${r.cel}</td>
                 <td>${r.tipo}</td>
-                <td>$${r.monto.toLocaleString()}</td>
+                <td>${accion}</td>
             </tr>`;
         });
-        document.getElementById('resumen-ventas').innerText = `$${totalDinero.toLocaleString()}`;
+        document.getElementById('resumen-ventas').innerText = `$${total.toLocaleString()}`;
     }
 
-    // --- SISTEMA DE RESPALDO (BACKUP) ---
     function descargarBackup() {
-        if (registros.length === 0) return alert("No hay datos para guardar.");
-        const data = JSON.stringify(registros, null, 2);
-        const blob = new Blob([data], { type: "text/plain" });
+        const blob = new Blob([JSON.stringify(registros)], { type: "text/plain" });
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = `backup_vibras_hm_${new Date().toLocaleDateString()}.txt`;
+        a.download = "backup_ventas.txt";
         a.click();
     }
 
     function restaurarBackup(e) {
-        const archivo = e.target.files[0];
-        if (!archivo) return;
         const lector = new FileReader();
-        lector.onload = function(evt) {
-            try {
-                const contenido = JSON.parse(evt.target.result);
-                registros = contenido;
-                localStorage.setItem('db_vibras_hm', JSON.stringify(registros));
-                renderizarTabla();
-                alert("Base de datos restaurada correctamente.");
-            } catch (err) {
-                alert("El archivo no es un backup válido.");
-            }
-        };
-        lector.readAsText(archivo);
-    }
-
-    function limpiarRegistros() {
-        if(confirm("¿Estás totalmente seguro? Se borrarán todas las ventas registradas.")) {
-            registros = [];
-            localStorage.removeItem('db_vibras_hm');
+        lector.onload = (evt) => {
+            registros = JSON.parse(evt.target.result);
+            localStorage.setItem('db_vibras_hm', JSON.stringify(registros));
             renderizarTabla();
-        }
+        };
+        lector.readAsText(e.target.files[0]);
     }
 </script>
-
 </body>
 </html>
